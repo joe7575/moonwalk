@@ -18,23 +18,18 @@ local RADIUS = 50
 local function switch_off(pos, clicker, meta)
 	if meta:get_string("user") == clicker:get_player_name() then
 		meta:set_int("running", 0)
-		meta:set_string("infotext", "Moon Walk off")
+		meta:set_string("infotext", "Moon Walk free")
 		clicker:set_physics_override({
 				gravity = 1
 		})
 		clicker:setpos({x=pos.x, y=pos.y+1.5, z=pos.z})	
-		clicker:setvelocity({x=0, y=0,z=0})
-		minetest.sound_play("moonwalk_off", {
-					pos = pos,
-					gain = 0.7,
-					max_hear_distance = 5,
-				})
+		clicker:setvelocity({x=0, y=0, z=0})
 	end
 end
 
 local function control_player(pos, pos1, pos2, player)
-	if player then
-		local meta = minetest.get_meta(pos)
+	local meta = minetest.get_meta(pos)
+	if player and player:get_player_name() == meta:get_string("user") then
 		local running = meta:get_int("running") or 0
 		local timeout = meta:get_int("timeout") or 1
 		if running == 1 and timeout > 0 then
@@ -59,29 +54,23 @@ local function control_player(pos, pos1, pos2, player)
 		end
 		meta:set_int("timeout", timeout - 1)
 	else
-		local meta = minetest.get_meta(pos)
 		meta:set_int("running", 0)
+		meta:set_string("user", nil)
+		meta:set_string("infotext", "Moon Walk free")
 	end
 end	
 
 local function switch_on(pos, clicker, meta)
 	meta:set_int("running", 1)
-	meta:set_string("infotext", "Moon Walk on")
+	meta:set_string("infotext", "Moon Walk busy")
 	meta:set_string("user", clicker:get_player_name())
 	meta:set_int("timeout", TIMEOUT)
 	clicker:set_physics_override({
 			gravity = 0.16 -- set gravity to 16% of its original value
-			              -- (0.16 * 9.81)
+			               -- (0.16 * 9.81)
 	})
 	local pos1 = {x=pos.x-RADIUS, y=pos.y, z=pos.z-RADIUS}
 	local pos2 = {x=pos.x+RADIUS, y=pos.y, z=pos.z+RADIUS}
-	local handle = minetest.sound_play("moonwalk", {
-			pos = pos,
-			gain = 0.7,
-			max_hear_distance = 5,
-			loop = true,
-		})
-	minetest.after(4, minetest.sound_stop, handle)
 	control_player(pos, pos1, pos2, clicker)
 end
 
@@ -89,6 +78,7 @@ minetest.register_node("moonwalk:startblock", {
 	description = "Moon Walk",
 	drawtype = "node",
 	tiles = {"moonwalk.png"},
+	
 	-- switch ON/OFF
 	on_rightclick = function (pos, node, clicker)
 		local meta = minetest.get_meta(pos)
@@ -102,13 +92,31 @@ minetest.register_node("moonwalk:startblock", {
 
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", "Moon Walk off")
+		meta:set_int("running", 0)
+		meta:set_string("infotext", "Moon Walk free")
 	end,
 
 	paramtype = "light",
 	paramtype2 = "facedir",
 	sunlight_propagates = true,
 	is_ground_content = false,
-	groups = {cracky=2, crumbly=2},
+	groups = {cracky=2, crumbly=2, not_in_creative_inventory=1},
 })
 
+minetest.register_lbm({
+	label = "[Moonwalk] Node update",
+	name = "moonwalk:update",
+	nodenames = {"moonwalk:startblock"},
+	run_at_every_load = true,
+	action = function(pos, node)
+		local meta = minetest.get_meta(pos)
+		meta:set_int("running", 0)
+		meta:set_string("infotext", "Moon Walk free")
+	end
+})
+
+minetest.register_on_joinplayer(function(player)
+	player:set_physics_override({gravity=1, speed=1})	
+end)
+
+dofile(minetest.get_modpath("moonwalk") .. "/skydive.lua")
