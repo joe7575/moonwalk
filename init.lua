@@ -19,6 +19,7 @@ local function switch_off(pos, clicker, meta)
 	if meta:get_string("user") == clicker:get_player_name() then
 		meta:set_int("running", 0)
 		meta:set_string("infotext", "Moon Walk free")
+		clicker:set_attribute("moonwalk_active", nil)
 		clicker:set_physics_override({
 				gravity = 1
 		})
@@ -61,7 +62,12 @@ local function control_player(pos, pos1, pos2, player)
 end	
 
 local function switch_on(pos, clicker, meta)
+	-- prevent handing over to the next crane
+	if clicker:get_attribute("moonwalk_active") ~= nil then  
+		return
+	end
 	meta:set_int("running", 1)
+	clicker:set_attribute("moonwalk_active", "true")
 	meta:set_string("infotext", "Moon Walk busy")
 	meta:set_string("user", clicker:get_player_name())
 	meta:set_int("timeout", TIMEOUT)

@@ -12,18 +12,22 @@
 
 ]]--
 
-
-local function control_player(player)
+local function control_player(player, ypos)
 	if player then
 		local pos = player:getpos()
+		local ds = ypos - pos.y
+		if ds > 1.5 or ds < 0.8 then
+			pos.y = pos.y - 1.0
+			player:setpos(pos)	
+		end
+		ypos = pos.y
 		local node = minetest.get_node_or_nil({x=pos.x, y=pos.y-2, z=pos.z})
-		print(dump(pos))
 		if node.name == "air" then
 			local v = player:get_player_velocity()
 			if v.y < -0.5 then
 				player:set_physics_override({gravity = 0, speed=2})
 			end
-			minetest.after(1, control_player, player)
+			minetest.after(1, control_player, player, ypos)
 		else
 			player:set_physics_override({gravity = 1, speed=1})		
 		end
@@ -32,7 +36,8 @@ end
 
 local function switch_on(clicker)
 	clicker:set_physics_override({gravity = 0.05, speed=2})
-	minetest.after(2, control_player, clicker)
+	local ypos = 0.0
+	minetest.after(2, control_player, clicker, ypos)
 end
 
 minetest.register_node("moonwalk:skydive", {
