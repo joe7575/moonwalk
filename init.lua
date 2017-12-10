@@ -123,6 +123,7 @@ minetest.register_lbm({
 
 minetest.register_on_joinplayer(function(player)
 	player:set_physics_override({gravity=1, speed=1})	
+	player:set_attribute("moonwalk_active", nil)
 end)
 
 dofile(minetest.get_modpath("moonwalk") .. "/skydive.lua")
