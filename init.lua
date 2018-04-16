@@ -23,14 +23,15 @@ local function switch_off(pos, clicker, meta)
 		clicker:set_physics_override({
 				gravity = 1
 		})
-		clicker:setpos({x=pos.x, y=pos.y+1.5, z=pos.z})	
+		clicker:set_pos({x=pos.x, y=pos.y+1.5, z=pos.z})	
 		clicker:setvelocity({x=0, y=0, z=0})
 	end
 end
 
-local function control_player(pos, pos1, pos2, player)
+local function control_player(pos, pos1, pos2, player_name)
+	local player = minetest.get_player_by_name(player_name)
 	local meta = minetest.get_meta(pos)
-	if player and player:get_player_name() == meta:get_string("user") then
+	if player and player_name == meta:get_string("user") then
 		local running = meta:get_int("running") or 0
 		local timeout = meta:get_int("timeout") or 1
 		if running == 1 and timeout > 0 then
@@ -44,11 +45,11 @@ local function control_player(pos, pos1, pos2, player)
 				if pl_pos.z > pos2.z then pl_pos.z = pos2.z; correction = true end
 				if correction == true then
 					local last_pos = minetest.string_to_pos(meta:get_string("last_known_pos"))
-					player:setpos(last_pos)	
+					player:set_pos(last_pos)	
 				else  -- store last known correct position
 					meta:set_string("last_known_pos", minetest.pos_to_string(pl_pos))
 				end
-				minetest.after(1, control_player, pos, pos1, pos2, player)
+				minetest.after(1, control_player, pos, pos1, pos2, player_name)
 			end
 		else
 			switch_off(pos, player, meta)
@@ -77,7 +78,7 @@ local function switch_on(pos, clicker, meta)
 	})
 	local pos1 = {x=pos.x-RADIUS, y=pos.y, z=pos.z-RADIUS}
 	local pos2 = {x=pos.x+RADIUS, y=pos.y, z=pos.z+RADIUS}
-	control_player(pos, pos1, pos2, clicker)
+	control_player(pos, pos1, pos2, clicker:get_player_name())
 end
 
 minetest.register_node("moonwalk:startblock", {
