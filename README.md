@@ -84,7 +84,7 @@ You can modify these values in `init.lua`:
 
 ## License
 
-Code: LGPLv2.1+
+Code: LGPLv2.1+  
 Textures: CC BY-SA 3.0
 
 ## Author
