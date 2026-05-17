@@ -1,6 +1,6 @@
 # Moon Walk Mod [moonwalk]
 
-A Luanti (formerly Minetest) mod that allows players to experience moon-like gravity with reduced gravitational force.
+A Luanti (formerly Minetest) mod that allows players to experience moon-like gravity with reduced gravitational force. Primarily designed for game parks and adventure areas.
 
 ![Moon Walk in action](screenshot.png)
 
