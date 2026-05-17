@@ -1,1 +1,0 @@
-Puts the caller in low gravity, like on the moon.
