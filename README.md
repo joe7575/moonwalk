@@ -2,6 +2,8 @@
 
 A Luanti (formerly Minetest) mod that allows players to experience moon-like gravity with reduced gravitational force.
 
+![Moon Walk in action](screenshot.png)
+
 ## Compatibility
 
 ✅ **Luanti 5.x compatible** - Uses only stable, non-deprecated APIs from the current Luanti engine.
