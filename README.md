@@ -80,6 +80,7 @@ You can modify these values in `init.lua`:
 
 - **v0.01** (2017-11-25)
   - Initial release
+  - Originally from the "Joes Miniwelt" server, not previously available as a standalone mod
 
 ## License
 
