@@ -1,3 +1,17 @@
+Moon Walk Mod for Luanti (Minetest)
+Copyright (C) 2017-2026 Joachim Stolberg
+
+================================================================================
+LICENSE SUMMARY
+================================================================================
+
+Code (Lua files): GNU Lesser General Public License v2.1 or later (LGPLv2.1+)
+Media (Textures): Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+
+================================================================================
+CODE LICENSE - LGPLv2.1+
+================================================================================
+
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation; either version 2.1 of the License, or
@@ -11,3 +25,27 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+The full text of the GNU Lesser General Public License v2.1 can be found at:
+https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+================================================================================
+MEDIA LICENSE - CC BY-SA 3.0
+================================================================================
+
+All textures and other media files are licensed under the
+Creative Commons Attribution-ShareAlike 3.0 Unported License.
+
+You are free to:
+  - Share: copy and redistribute the material in any medium or format
+  - Adapt: remix, transform, and build upon the material for any purpose,
+    even commercially
+
+Under the following terms:
+  - Attribution: You must give appropriate credit, provide a link to the 
+    license, and indicate if changes were made
+  - ShareAlike: If you remix, transform, or build upon the material, you must
+    distribute your contributions under the same license as the original
+
+The full text of the CC BY-SA 3.0 license can be found at:
+https://creativecommons.org/licenses/by-sa/3.0/
