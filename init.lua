@@ -10,29 +10,36 @@
 	History:
 	2017-11-25  v0.01  first version
 	2026-05-17  v0.02  updated to new API, added player physics locking pattern
+	2026-05-19  v0.03  simplified to gravity-only and require player_monoids
 
 ]]--
 
 local TIMEOUT = 120 -- timeout in seconds (2 minutes)
 local RADIUS = 50   -- effect radius around the moonwalk block
+local MOON_GRAVITY = 0.12
+local GRAVITY_CHANGE_ID = "moonwalk:gravity"
+
+local function set_player_gravity(player, gravity)
+	player_monoids.gravity:add_change(player, gravity, GRAVITY_CHANGE_ID)
+end
+
+local function clear_player_gravity(player)
+	player_monoids.gravity:del_change(player, GRAVITY_CHANGE_ID)
+end
 
 local function restore_player_physics(player)
-	local physics = player:get_physics_override()
 	local meta = player:get_meta()
 	
 	if meta:get_int("moonwalk_is_active") == 1 then
 		meta:set_int("moonwalk_is_active", 0)
-		
-		-- restore old values (gravity)
-		physics.gravity = meta:get_float("moonwalk_normal_gravity")
-		player:set_physics_override(physics)
+		clear_player_gravity(player)
 	end
-	meta:set_int("player_physics_locked", 0)
 end
 
 local function switch_off(pos, clicker, meta)
 	if meta:get_string("user") == clicker:get_player_name() then
 		meta:set_int("running", 0)
+		meta:set_string("user", "")
 		meta:set_string("infotext", "Moon Walk free")
 		restore_player_physics(clicker)
 		clicker:set_pos({x=pos.x, y=pos.y+1.5, z=pos.z})	
@@ -46,6 +53,7 @@ local function control_player(pos, pos1, pos2, player_name)
 		local running = meta:get_int("running") or 0
 		local timeout = meta:get_int("timeout") or 1
 		if running == 1 and timeout > 0 then
+			set_player_gravity(player, MOON_GRAVITY)
 			-- check if player is outside of the moonwalk radius
 			local correction = false
 			local pl_pos = player:get_pos()
@@ -68,38 +76,26 @@ local function control_player(pos, pos1, pos2, player_name)
 		meta:set_int("timeout", timeout - 1)
 	else
 		meta:set_int("running", 0)
-		meta:set_string("user", nil)
+		meta:set_string("user", "")
 		meta:set_string("infotext", "Moon Walk free")
 	end
 end	
 
 local function switch_on(pos, clicker, meta)
-	local physics = clicker:get_physics_override()
 	local player_meta = clicker:get_meta()
-	
-	-- check for physics locking conflicts with other mods
-	if player_meta:get_int("player_physics_locked") == 0 then
-		player_meta:set_int("player_physics_locked", 1)
-		
-		-- store current gravity value
-		player_meta:set_float("moonwalk_normal_gravity", physics.gravity)
-		
-		-- activate moon gravity (16% of normal)
-		physics.gravity = 0.16 -- set gravity to 16% of its original value (0.16 * 9.81)
-		clicker:set_physics_override(physics)
-		player_meta:set_int("moonwalk_is_active", 1)
-		
-		meta:set_int("running", 1)
-		meta:set_string("infotext", "Moon Walk busy")
-		meta:set_string("user", clicker:get_player_name())
-		meta:set_int("timeout", TIMEOUT)
-		
-		local pos1 = {x=pos.x-RADIUS, y=pos.y, z=pos.z-RADIUS}
-		local pos2 = {x=pos.x+RADIUS, y=pos.y, z=pos.z+RADIUS}
-		control_player(pos, pos1, pos2, clicker:get_player_name())
-	else
-		core.chat_send_player(clicker:get_player_name(), "Moon Walk is blocked by another mod!")
-	end
+
+	-- activate moon gravity
+	set_player_gravity(clicker, MOON_GRAVITY)
+	player_meta:set_int("moonwalk_is_active", 1)
+
+	meta:set_int("running", 1)
+	meta:set_string("infotext", "Moon Walk busy")
+	meta:set_string("user", clicker:get_player_name())
+	meta:set_int("timeout", TIMEOUT)
+
+	local pos1 = {x=pos.x-RADIUS, y=pos.y, z=pos.z-RADIUS}
+	local pos2 = {x=pos.x+RADIUS, y=pos.y, z=pos.z+RADIUS}
+	control_player(pos, pos1, pos2, clicker:get_player_name())
 end
 
 core.register_node("moonwalk:startblock", {
